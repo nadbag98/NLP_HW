@@ -24,5 +24,5 @@ def test_npy():
     assert path.exists()
 
 def test_notebook():
-    path = pathlib.Path("q3_char-rnn-generation_final.ipynb")
+    path = pathlib.Path("q3_char-rnn-generation.ipynb")
     assert path.exists()
