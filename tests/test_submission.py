@@ -22,3 +22,7 @@ def test_pdf():
 def test_npy():
     path = pathlib.Path("saved_params_40000.npy")
     assert path.exists()
+
+def test_notebook():
+    path = pathlib.Path("q3_char-rnn-generation_final.ipynb")
+    assert path.exists()
