@@ -23,6 +23,10 @@ def test_npy():
     path = pathlib.Path("saved_params_40000.npy")
     assert path.exists()
 
-def test_notebook():
+def test_q3():
     path = pathlib.Path("Copy_of_q3_char_rnn_generation.ipynb")
+    assert path.exists()
+    
+def test_q5():
+    path = pathlib.Path("Copy_of_q5_DAN.ipynb")
     assert path.exists()
