@@ -28,7 +28,10 @@ def forward(data, label, params, dimensions):
 
     # Compute the probability
     ### YOUR CODE HERE: forward propagation
-    raise NotImplementedError
+    x = data[label]
+    h = sigmoid(x.dot(W1) + b1)
+    y_hat = softmax(h.dot(W2) + b2)
+    return y_hat[label]
     ### END YOUR CODE
 
 
