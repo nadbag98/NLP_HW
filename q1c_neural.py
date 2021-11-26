@@ -28,10 +28,9 @@ def forward(data, label, params, dimensions):
 
     # Compute the probability
     ### YOUR CODE HERE: forward propagation
-    x = data[label]
-    h = sigmoid(x.dot(W1) + b1)
+    h = sigmoid(data.dot(W1) + b1)
     y_hat = softmax(h.dot(W2) + b2)
-    return y_hat[label]
+    return -np.log(y_hat[0, label])
     ### END YOUR CODE
 
 
@@ -63,11 +62,31 @@ def forward_backward_prop(data, labels, params, dimensions):
     b2 = np.reshape(params[ofs:ofs + Dy], (1, Dy))
 
     ### YOUR CODE HERE: forward propagation
-    raise NotImplementedError
+    M = data.shape[0]
+    cost = 0.0
+    for i in range(M):
+        x = data[i]
+        lab = labels[i].tolist().index(1)
+        cost += forward(x, lab, params, dimensions)
     ### END YOUR CODE
 
     ### YOUR CODE HERE: backward propagation
-    raise NotImplementedError
+    gradW1 = np.zeros(Dx*H).reshape(Dx, H)
+    gradb1 = np.zeros(H).reshape(1, H)
+    gradW2 = np.zeros(Dy*H).reshape(H, Dy)
+    gradb2 = np.zeros(Dy).reshape(1, Dy)
+    for i in range(M):
+        x = data[i]
+        lab = labels[i].tolist().index(1)
+        h = sigmoid(x.dot(W1) + b1)[0]
+        y_hat = softmax(h.dot(W2) + b2)
+        y_hat_corr = y_hat[0]
+        y_hat_corr[lab] -= 1
+        Dj_Dz = y_hat_corr.dot(W2.T) * sigmoid_grad(h)
+        gradW1 += np.outer(x.transpose(), Dj_Dz)
+        gradb1 += Dj_Dz
+        gradW2 += np.outer(h.T, y_hat_corr)
+        gradb2 += y_hat_corr
     ### END YOUR CODE
 
     # Stack gradients (do not modify)
@@ -93,7 +112,6 @@ def sanity_check():
 
     params = np.random.randn((dimensions[0] + 1) * dimensions[1] + (
         dimensions[1] + 1) * dimensions[2], )
-
     gradcheck_naive(lambda params:
                     forward_backward_prop(data, labels, params, dimensions), params)
 
@@ -113,4 +131,4 @@ def your_sanity_checks():
 
 if __name__ == "__main__":
     sanity_check()
-    your_sanity_checks()
+    # your_sanity_checks()
