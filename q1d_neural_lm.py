@@ -32,7 +32,7 @@ def load_vocab_embeddings(path=VOCAB_EMBEDDING_PATH):
 
 def load_data_as_sentences(path, word_to_num):
     """
-    Conv:erts the training data to an array of integer arrays.
+    Converts the training data to an array of integer arrays.
       args: 
         path: string pointing to the training data
         word_to_num: A dictionary from string words to integers
@@ -82,7 +82,12 @@ def lm_wrapper(in_word_index, out_word_index, num_to_word_embedding, dimensions,
 
     # Construct the data batch and run you backpropogation implementation
     ### YOUR CODE HERE
-    raise NotImplementedError
+    N = len(in_word_index)
+    for i in range(BATCH_SIZE):
+        ind = np.random.randint(N)
+        data[i] = num_to_word_embedding[in_word_index[ind]]
+        labels[i] = int_to_one_hot(out_word_index[ind], output_dim)
+    cost, grad = forward_backward_prop(data, labels, params, dimensions)
     ### END YOUR CODE
 
     cost /= BATCH_SIZE
@@ -101,7 +106,12 @@ def eval_neural_lm(eval_data_path):
 
     perplexity = 0
     ### YOUR CODE HERE
-    raise NotImplementedError
+    perplexity = 1
+    for i in range(num_of_examples):
+        pred = forward(num_to_word_embedding[in_word_index[i]], out_word_index[i],
+                       params, dimensions)
+        pred_norm = pred / num_of_examples
+        perplexity *= np.exp(pred_norm)
     ### END YOUR CODE
 
     return perplexity

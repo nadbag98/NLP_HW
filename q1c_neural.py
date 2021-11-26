@@ -28,7 +28,7 @@ def forward(data, label, params, dimensions):
 
     # Compute the probability
     ### YOUR CODE HERE: forward propagation
-    h = sigmoid(data.dot(W1) + b1)
+    h = sigmoid(np.array(data).dot(W1) + b1)
     y_hat = softmax(h.dot(W2) + b2)
     return -np.log(y_hat[0, label])
     ### END YOUR CODE
