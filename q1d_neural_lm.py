@@ -108,9 +108,9 @@ def eval_neural_lm(eval_data_path):
     ### YOUR CODE HERE
     perplexity = 1
     for i in range(num_of_examples):
-        pred = forward(num_to_word_embedding[in_word_index[i]], out_word_index[i],
+        p = forward(num_to_word_embedding[in_word_index[i]], out_word_index[i],
                        params, dimensions)
-        pred_norm = pred / num_of_examples
+        pred_norm = -np.log(p) / num_of_examples
         perplexity *= np.exp(pred_norm)
     ### END YOUR CODE
 

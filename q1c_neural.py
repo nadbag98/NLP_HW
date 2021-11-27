@@ -30,7 +30,7 @@ def forward(data, label, params, dimensions):
     ### YOUR CODE HERE: forward propagation
     h = sigmoid(np.array(data).dot(W1) + b1)
     y_hat = softmax(h.dot(W2) + b2)
-    return -np.log(y_hat[0, label])
+    return y_hat[0, label]
     ### END YOUR CODE
 
 
@@ -67,7 +67,7 @@ def forward_backward_prop(data, labels, params, dimensions):
     for i in range(M):
         x = data[i]
         lab = labels[i].tolist().index(1)
-        cost += forward(x, lab, params, dimensions)
+        cost -= np.log(forward(x, lab, params, dimensions))
     ### END YOUR CODE
 
     ### YOUR CODE HERE: backward propagation
