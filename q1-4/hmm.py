@@ -15,7 +15,18 @@ def hmm_train(sents):
     q_tri_counts, q_bi_counts, q_uni_counts, e_tag_counts = [defaultdict(int) for i in range(4)]
     e_word_tag_counts = defaultdict(lambda: defaultdict(int))
     ### YOUR CODE HERE
-    raise NotImplementedError
+    for sent in sents:
+        sent = [("", "*"), ("", "*")] + sent
+        for i in range(2, len(sent)):
+            q_tri_counts[(sent[i-2][1], sent[i-1][1], sent[i][1])] += 1
+            q_bi_counts[(sent[i-1][1], sent[i][1])] += 1
+            q_uni_counts[sent[i][1]] += 1
+            e_word_tag_counts[sent[i][0]][sent[i][1]] += 1
+            total_tokens += 1
+        q_tri_counts[(sent[-2][1], sent[-1][1], "STOP")] += 1
+        q_bi_counts[(sent[-1][1], "STOP")] += 1
+    q_uni_counts["STOP"] = len(sents)
+    e_tag_counts = q_uni_counts.copy()
     ### END YOUR CODE
     return total_tokens, q_tri_counts, q_bi_counts, q_uni_counts, e_word_tag_counts, e_tag_counts
 
