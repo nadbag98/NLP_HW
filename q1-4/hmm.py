@@ -1,7 +1,9 @@
+import math
 import os
 import time
 from data import *
 from collections import defaultdict, Counter
+
 
 def hmm_train(sents):
     """
@@ -18,8 +20,8 @@ def hmm_train(sents):
     for sent in sents:
         sent = [("", "*"), ("", "*")] + sent
         for i in range(2, len(sent)):
-            q_tri_counts[(sent[i-2][1], sent[i-1][1], sent[i][1])] += 1
-            q_bi_counts[(sent[i-1][1], sent[i][1])] += 1
+            q_tri_counts[(sent[i - 2][1], sent[i - 1][1], sent[i][1])] += 1
+            q_bi_counts[(sent[i - 1][1], sent[i][1])] += 1
             q_uni_counts[sent[i][1]] += 1
             e_word_tag_counts[sent[i][0]][sent[i][1]] += 1
             total_tokens += 1
@@ -39,9 +41,54 @@ def hmm_viterbi(sent, total_tokens, q_tri_counts, q_bi_counts, q_uni_counts,
     """
     predicted_tags = ["O"] * (len(sent))
     ### YOUR CODE HERE
-    raise NotImplementedError
+    lambda3 = 1 - lambda1 - lambda2
+
+    def log_q(y_i_2, y_i_1, y_i_0):
+        tri_count = q_tri_counts[(y_i_2, y_i_1, y_i_0)]
+        tri_denom = q_bi_counts[(y_i_2, y_i_1)]
+        bi_count = q_bi_counts[(y_i_1, y_i_0)]
+        bi_denom = q_uni_counts[y_i_1]
+        uni_count = q_uni_counts[y_i_0]
+        return math.log(lambda1 * (tri_count / tri_denom) +
+                        lambda2 * (bi_count / bi_denom) +
+                        lambda3 * (uni_count / total_tokens))
+
+    tags = defaultdict(lambda: q_uni_counts.keys())
+    tags[0] = ["*"]
+    tags[1] = ["*"]
+    # TODO - preprocessing
+    predicted_tags = ["*", "*"] + predicted_tags
+    sent = ["", ""] + sent
+    # We work with log probability to avoid values too close to zero
+    pi_prev = {("*", "*"): 0}
+    bp = {}
+    for i in range(2, len(sent)):
+        pi_curr = {}
+        for v in tags[i]:
+            e_x_v = e_word_tag_counts[sent[i]][v]
+            if e_x_v == 0:
+                continue
+            log_e_x_v = math.log(e_x_v) - math.log(e_tag_counts[v])
+            for u in tags[i-1]:
+                curr_max = float('-inf')
+                curr_argmax = ""
+                for w in tags[i-2]:
+                    if (w, u) not in pi_prev:
+                        continue
+                    log_q_vwu = log_q(w, u, v)
+                    log_pi_prev_wu = pi_prev[(w, u)]
+                    sum_log_prob = log_q_vwu + log_pi_prev_wu
+                    if sum_log_prob > curr_max:
+                        curr_max = sum_log_prob
+                        curr_argmax = w
+                pi_curr[(u, v)] = curr_max + log_e_x_v
+                bp[(i, u, v)] = curr_argmax
+        pi_prev = pi_curr
+    predicted_tags[-2], predicted_tags[-1] = max(pi_curr, key=pi_curr.get)
+    # TODO - backprop y_k values
     ### END YOUR CODE
     return predicted_tags
+
 
 def hmm_eval(test_data, total_tokens, q_tri_counts, q_bi_counts, q_uni_counts, e_word_tag_counts, e_tag_counts):
     """
@@ -60,6 +107,7 @@ def hmm_eval(test_data, total_tokens, q_tri_counts, q_bi_counts, q_uni_counts, e
         ### END YOUR CODE
 
     return evaluate_ner(gold_tag_seqs, pred_tag_seqs)
+
 
 if __name__ == "__main__":
     start_time = time.time()
