@@ -46,7 +46,8 @@ def most_frequent_eval(test_set, pred_tags):
         gold_tag_seqs.append(true_tags)
 
         ### YOUR CODE HERE
-        raise NotImplementedError
+        pred = tuple(pred_tags[word] for word in words)
+        pred_tag_seqs.append(pred)
         ### END YOUR CODE
 
     return evaluate_ner(gold_tag_seqs, pred_tag_seqs)
