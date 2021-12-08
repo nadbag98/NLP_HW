@@ -227,6 +227,8 @@ def replace_word(word):
     ### END YOUR CODE
     return "UNK"
 
+#hello
+
 def preprocess_sent(vocab, sents):
     """
         return a sentence, where every word that is not frequent enough is replaced
