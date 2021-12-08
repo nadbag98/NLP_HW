@@ -221,7 +221,9 @@ def replace_word(word):
         Replaces rare words with categories (numbers, dates, etc...)
     """
     ### YOUR CODE HERE
-    raise NotImplementedError
+    for tup in rare_words_transformation_rules:
+        if tup[1](word):
+            return tup[0]
     ### END YOUR CODE
     return "UNK"
 
