@@ -14,7 +14,50 @@ def build_extra_decoding_arguments(train_sents):
 
     extra_decoding_arguments = {}
     ### YOUR CODE HERE
-    raise NotImplementedError
+    total_tokens = 0
+
+    q_tri_counts, q_bi_counts, q_uni_counts, e_tag_counts = [defaultdict(int) for i in range(4)]
+    e_word_tag_counts, e_word_tag_counts_prev, e_word_tag_counts_next, prefix_tag_counts, suffix_tag_counts = \
+        [defaultdict(lambda: defaultdict(int)) for i in range(5)]
+
+    for sent in train_sents:
+        sent = [("", "*"), ("", "*")] + sent
+        for i in range(2, len(sent)):
+            word = sent[i][0]
+            tag = sent[i][1]
+
+            q_tri_counts[(sent[i - 2][1], sent[i - 1][1], tag)] += 1
+            q_bi_counts[(sent[i - 1][1], tag)] += 1
+            q_uni_counts[tag] += 1
+            e_word_tag_counts[word][tag] += 1
+
+            # prev/next word tag pairs
+            if i != 2:
+                e_word_tag_counts_prev[sent[i - 1][0]][tag] += 1
+            if i != len(sent)-1:
+                e_word_tag_counts_next[sent[i + 1][0]][tag] += 1
+
+            # suffix/prefix tag pairs
+            max_sub_len = min(len(word), 4)
+            for sub_len in range(0, max_sub_len):
+                prefix_tag_counts[word[:sub_len+1]][tag] += 1
+                suffix_tag_counts[word[-sub_len-1:]][tag] += 1
+            total_tokens += 1
+        q_tri_counts[(sent[-2][1], sent[-1][1], "STOP")] += 1
+        q_bi_counts[(sent[-1][1], "STOP")] += 1
+    q_bi_counts[("*", "*")] = len(train_sents)
+    q_uni_counts["*"] = len(train_sents)
+    q_uni_counts["STOP"] = len(train_sents)
+
+    extra_decoding_arguments['total_tokens'] = total_tokens
+    extra_decoding_arguments['q_tri_counts'] = q_tri_counts
+    extra_decoding_arguments['q_bi_counts'] = q_bi_counts
+    extra_decoding_arguments['q_uni_counts'] = q_uni_counts
+    extra_decoding_arguments['e_word_tag_counts'] = e_word_tag_counts
+    extra_decoding_arguments['e_word_tag_counts_prev'] = e_word_tag_counts_prev
+    extra_decoding_arguments['e_word_tag_counts_next'] = e_word_tag_counts_next
+    extra_decoding_arguments['prefix_tag_counts'] = prefix_tag_counts
+    extra_decoding_arguments['suffix_tag_counts'] = suffix_tag_counts
     ### END YOUR CODE
 
     return extra_decoding_arguments
@@ -28,7 +71,11 @@ def extract_features_base(curr_word, next_word, prev_word, prevprev_word, prev_t
     features = {}
     features['word'] = curr_word
     ### YOUR CODE HERE
-    raise NotImplementedError
+    features['next_word'] = next_word
+    features['prev_word'] = prev_word
+    features['prevprev_word'] = prevprev_word
+    features['prev_tag'] = prev_tag
+    features['prevprev_tag'] = prevprev_tag
     ### END YOUR CODE
     return features
 
