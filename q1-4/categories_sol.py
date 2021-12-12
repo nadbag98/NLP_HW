@@ -91,44 +91,44 @@ rare_words_transformation_rules = [
     ('ishNationality',         regex_rule('^[A-Z][a-z]+ish$')),    # Example: Spanish
     ('ianNationality',         regex_rule('^[A-Z][a-z]+ian$')),    # Example: Canadian
 
-    ('initCap_iedLowercase',   regex_rule('^[A-Z][a-z]+ied$')),    # Example: Supplied
-    ('initCap_edLowercase',    regex_rule('^[A-Z][a-z]+ed$')),     # Example: Played
-    ('initCap_ingLowercase',   regex_rule('^[A-Z][a-z]+ing$')),    # Example: Playing
-    ('initCap_tionLowercase',  regex_rule('^[A-Z][a-z]+tion$')),   # Example: Transition
-    ('initCap_sionLowercase',  regex_rule('^[A-Z][a-z]+sion$')),   # Example: Emission
-    ('initCap_xionLowercase',  regex_rule('^[A-Z][a-z]+xion$')),   # Example: Complexion
-    ('initCap_ableLowercase',  regex_rule('^[A-Z][a-z]+able$')),   # Example: Formidable
-    ('initCap_ibleLowercase',  regex_rule('^[A-Z][a-z]+ible$')),   # Example: Tangible
-    ('initCap_fulLowercase',   regex_rule('^[A-Z][a-z]+ful$')),    # Example: Powerful
-    ('initCap_anceLowercase',  regex_rule('^[A-Z][a-z]+ance$')),   # Example: Performance
-    ('initCap_enceLowercase',  regex_rule('^[A-Z][a-z]+ence$')),   # Example: Intelligence
-    ('initCap_sialLowercase',  regex_rule('^[A-Z][a-z]+sial$')),   # Example: Controversial
-    ('initCap_tialLowercase',  regex_rule('^[A-Z][a-z]+tial$')),   # Example: Potential
-    ('initCap_mentLowercase',  regex_rule('^[A-Z][a-z]+ment$')),   # Example: Establishment
-    ('initCap_shipLowercase',  regex_rule('^[A-Z][a-z]+ship$')),   # Example: Relationship
-    ('initCap_nessLowercase',  regex_rule('^[A-Z][a-z]+ness$')),   # Example: Kindness
-    ('initCap_hoodLowercase',  regex_rule('^[A-Z][a-z]+hood$')),   # Example: Neighborhood
-    ('initCap_domLowercase',   regex_rule('^[A-Z][a-z]+dom$')),    # Example: Kingdom
-    ('initCap_eeLowercase',    regex_rule('^[A-Z][a-z]+ee$')),     # Example: Trainee
-    ('initCap_istLowercase',   regex_rule('^[A-Z][a-z]+ist$')),    # Example: Socialist
-    ('initCap_ismLowercase',   regex_rule('^[A-Z][a-z]+ism$')),    # Example: Capitalism
-    ('initCap_ageLowercase',   regex_rule('^[A-Z][a-z]+age$')),    # Example: Village
-    ('initCap_erLowercase',    regex_rule('^[A-Z][a-z]+er$')),     # Example: Driver
-    ('initCap_orLowercase',    regex_rule('^[A-Z][a-z]+or$')),     # Example: Director
-    ('initCap_ityLowercase',   regex_rule('^[A-Z][a-z]+ity$')),    # Example: Equality
-    ('initCap_tyLowercase',    regex_rule('^[A-Z][a-z]+ty$')),     # Example: Cruelty
-    ('initCap_ryLowercase',    regex_rule('^[A-Z][a-z]+ry$')),     # Example: Robbery
-    ('initCap_lyLowercase',    regex_rule('^[A-Z][a-z]+ly$')),     # Example: Easily
-    ('initCap_wardLowercase',  regex_rule('^[A-Z][a-z]+ward$')),   # Example: Backward
-    ('initCap_wardsLowercase', regex_rule('^[A-Z][a-z]+wards$')),  # Example: Backwards
-    ('initCap_izeLowercase',   regex_rule('^[A-Z][a-z]+ize$')),    # Example: Characterize
-    ('initCap_iseLowercase',   regex_rule('^[A-Z][a-z]+ise$')),    # Example: Characterise (UK)
-    ('initCap_ifyLowercase',   regex_rule('^[A-Z][a-z]+ify$')),    # Example: Signify
-    ('initCap_ateLowercase',   regex_rule('^[A-Z][a-z]+ate$')),    # Example: Irrigate
-    ('initCap_enLowercase',    regex_rule('^[A-Z][a-z]+en$')),     # Example: Strengthen
-    ('initCap_icLowercase',    regex_rule('^[A-Z][a-z]+ic$')),     # Example: Classic
-    ('initCap_alLowercase',    regex_rule('^[A-Z][a-z]+al$')),     # Example: Brutal
-    ('initCap_yLowercase',     regex_rule('^[A-Z][a-z]+y$')),      # Example: Cloudy
+    ('initCap_verb',   regex_rule('^[A-Z][a-z]+ied$')),    # Example: Supplied
+    ('initCap_verb',    regex_rule('^[A-Z][a-z]+ed$')),     # Example: Played
+    ('initCap_verb',   regex_rule('^[A-Z][a-z]+ing$')),    # Example: Playing
+    # ('initCap_tionLowercase',  regex_rule('^[A-Z][a-z]+tion$')),   # Example: Transition
+    # ('initCap_sionLowercase',  regex_rule('^[A-Z][a-z]+sion$')),   # Example: Emission
+    # ('initCap_xionLowercase',  regex_rule('^[A-Z][a-z]+xion$')),   # Example: Complexion
+    # ('initCap_ableLowercase',  regex_rule('^[A-Z][a-z]+able$')),   # Example: Formidable
+    # ('initCap_ibleLowercase',  regex_rule('^[A-Z][a-z]+ible$')),   # Example: Tangible
+    # ('initCap_fulLowercase',   regex_rule('^[A-Z][a-z]+ful$')),    # Example: Powerful
+    # ('initCap_anceLowercase',  regex_rule('^[A-Z][a-z]+ance$')),   # Example: Performance
+    # ('initCap_enceLowercase',  regex_rule('^[A-Z][a-z]+ence$')),   # Example: Intelligence
+    # ('initCap_sialLowercase',  regex_rule('^[A-Z][a-z]+sial$')),   # Example: Controversial
+    # ('initCap_tialLowercase',  regex_rule('^[A-Z][a-z]+tial$')),   # Example: Potential
+    # ('initCap_mentLowercase',  regex_rule('^[A-Z][a-z]+ment$')),   # Example: Establishment
+    # ('initCap_shipLowercase',  regex_rule('^[A-Z][a-z]+ship$')),   # Example: Relationship
+    # ('initCap_nessLowercase',  regex_rule('^[A-Z][a-z]+ness$')),   # Example: Kindness
+    # ('initCap_hoodLowercase',  regex_rule('^[A-Z][a-z]+hood$')),   # Example: Neighborhood
+    # ('initCap_domLowercase',   regex_rule('^[A-Z][a-z]+dom$')),    # Example: Kingdom
+    # ('initCap_eeLowercase',    regex_rule('^[A-Z][a-z]+ee$')),     # Example: Trainee
+    # ('initCap_istLowercase',   regex_rule('^[A-Z][a-z]+ist$')),    # Example: Socialist
+    # ('initCap_ismLowercase',   regex_rule('^[A-Z][a-z]+ism$')),    # Example: Capitalism
+    # ('initCap_ageLowercase',   regex_rule('^[A-Z][a-z]+age$')),    # Example: Village
+    # ('initCap_erLowercase',    regex_rule('^[A-Z][a-z]+er$')),     # Example: Driver
+    # ('initCap_orLowercase',    regex_rule('^[A-Z][a-z]+or$')),     # Example: Director
+    # ('initCap_ityLowercase',   regex_rule('^[A-Z][a-z]+ity$')),    # Example: Equality
+    # ('initCap_tyLowercase',    regex_rule('^[A-Z][a-z]+ty$')),     # Example: Cruelty
+    # ('initCap_ryLowercase',    regex_rule('^[A-Z][a-z]+ry$')),     # Example: Robbery
+    # ('initCap_lyLowercase',    regex_rule('^[A-Z][a-z]+ly$')),     # Example: Easily
+    # ('initCap_wardLowercase',  regex_rule('^[A-Z][a-z]+ward$')),   # Example: Backward
+    # ('initCap_wardsLowercase', regex_rule('^[A-Z][a-z]+wards$')),  # Example: Backwards
+    # # ('initCap_izeLowercase',   regex_rule('^[A-Z][a-z]+ize$')),    # Example: Characterize
+    # # ('initCap_iseLowercase',   regex_rule('^[A-Z][a-z]+ise$')),    # Example: Characterise (UK)
+    # ('initCap_ifyLowercase',   regex_rule('^[A-Z][a-z]+ify$')),    # Example: Signify
+    # ('initCap_ateLowercase',   regex_rule('^[A-Z][a-z]+ate$')),    # Example: Irrigate
+    # ('initCap_enLowercase',    regex_rule('^[A-Z][a-z]+en$')),     # Example: Strengthen
+    # ('initCap_icLowercase',    regex_rule('^[A-Z][a-z]+ic$')),     # Example: Classic
+    # ('initCap_alLowercase',    regex_rule('^[A-Z][a-z]+al$')),     # Example: Brutal
+    # ('initCap_yLowercase',     regex_rule('^[A-Z][a-z]+y$')),      # Example: Cloudy
 
     ('initCap', regex_rule('^[A-Z].*$'))  # Example: Cap
 ]

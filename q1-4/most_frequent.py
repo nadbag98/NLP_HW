@@ -44,6 +44,7 @@ def most_frequent_eval(test_set, pred_tags):
     for sent in test_set:
         words, true_tags = zip(*sent)
         gold_tag_seqs.append(true_tags)
+        print("")
 
         ### YOUR CODE HERE
         pred = tuple(pred_tags[word] for word in words)
