@@ -15,50 +15,52 @@ def build_extra_decoding_arguments(train_sents):
 
     extra_decoding_arguments = {}
     ### YOUR CODE HERE
-    total_tokens = 0
-
-    q_tri_counts, q_bi_counts, q_uni_counts, e_tag_counts = [defaultdict(int) for i in range(4)]
-    e_word_tag_counts, e_word_tag_counts_prev, e_word_tag_counts_next, prefix_tag_counts, suffix_tag_counts = \
-        [defaultdict(lambda: defaultdict(int)) for i in range(5)]
-
+    extra_decoding_arguments["q_dict"] = {}
+    e_word_tag_counts = defaultdict(lambda: defaultdict(int))
+    # total_tokens = 0
+    #
+    # q_tri_counts, q_bi_counts, q_uni_counts, e_tag_counts = [defaultdict(int) for i in range(4)]
+    # e_word_tag_counts, e_word_tag_counts_prev, e_word_tag_counts_next, prefix_tag_counts, suffix_tag_counts = \
+    #     [defaultdict(lambda: defaultdict(int)) for i in range(5)]
+    #
     for sent in train_sents:
-        sent = [("", "*"), ("", "*")] + sent
-        for i in range(2, len(sent)):
+        # sent = [("", "*"), ("", "*")] + sent
+        for i in range(len(sent)):
             word = sent[i][0]
             tag = sent[i][1]
-
-            q_tri_counts[(sent[i - 2][1], sent[i - 1][1], tag)] += 1
-            q_bi_counts[(sent[i - 1][1], tag)] += 1
-            q_uni_counts[tag] += 1
+    #
+    #         q_tri_counts[(sent[i - 2][1], sent[i - 1][1], tag)] += 1
+    #         q_bi_counts[(sent[i - 1][1], tag)] += 1
+    #         q_uni_counts[tag] += 1
             e_word_tag_counts[word][tag] += 1
-
-            # prev/next word tag pairs
-            if i != 2:
-                e_word_tag_counts_prev[sent[i - 1][0]][tag] += 1
-            if i != len(sent) - 1:
-                e_word_tag_counts_next[sent[i + 1][0]][tag] += 1
-
-            # suffix/prefix tag pairs
-            max_sub_len = min(len(word), 4)
-            for sub_len in range(0, max_sub_len):
-                prefix_tag_counts[word[:sub_len + 1]][tag] += 1
-                suffix_tag_counts[word[-sub_len - 1:]][tag] += 1
-            total_tokens += 1
-        q_tri_counts[(sent[-2][1], sent[-1][1], "STOP")] += 1
-        q_bi_counts[(sent[-1][1], "STOP")] += 1
-    q_bi_counts[("*", "*")] = len(train_sents)
-    q_uni_counts["*"] = len(train_sents)
-    q_uni_counts["STOP"] = len(train_sents)
-
-    extra_decoding_arguments['total_tokens'] = total_tokens
-    extra_decoding_arguments['q_tri_counts'] = q_tri_counts
-    extra_decoding_arguments['q_bi_counts'] = q_bi_counts
-    extra_decoding_arguments['q_uni_counts'] = q_uni_counts
+    #
+    #         # prev/next word tag pairs
+    #         if i != 2:
+    #             e_word_tag_counts_prev[sent[i - 1][0]][tag] += 1
+    #         if i != len(sent) - 1:
+    #             e_word_tag_counts_next[sent[i + 1][0]][tag] += 1
+    #
+    #         # suffix/prefix tag pairs
+    #         max_sub_len = min(len(word), 4)
+    #         for sub_len in range(0, max_sub_len):
+    #             prefix_tag_counts[word[:sub_len + 1]][tag] += 1
+    #             suffix_tag_counts[word[-sub_len - 1:]][tag] += 1
+    #         total_tokens += 1
+    #     q_tri_counts[(sent[-2][1], sent[-1][1], "STOP")] += 1
+    #     q_bi_counts[(sent[-1][1], "STOP")] += 1
+    # q_bi_counts[("*", "*")] = len(train_sents)
+    # q_uni_counts["*"] = len(train_sents)
+    # q_uni_counts["STOP"] = len(train_sents)
+    #
+    # extra_decoding_arguments['total_tokens'] = total_tokens
+    # extra_decoding_arguments['q_tri_counts'] = q_tri_counts
+    # extra_decoding_arguments['q_bi_counts'] = q_bi_counts
+    # extra_decoding_arguments['q_uni_counts'] = q_uni_counts
     extra_decoding_arguments['e_word_tag_counts'] = e_word_tag_counts
-    extra_decoding_arguments['e_word_tag_counts_prev'] = e_word_tag_counts_prev
-    extra_decoding_arguments['e_word_tag_counts_next'] = e_word_tag_counts_next
-    extra_decoding_arguments['prefix_tag_counts'] = prefix_tag_counts
-    extra_decoding_arguments['suffix_tag_counts'] = suffix_tag_counts
+    # extra_decoding_arguments['e_word_tag_counts_prev'] = e_word_tag_counts_prev
+    # extra_decoding_arguments['e_word_tag_counts_next'] = e_word_tag_counts_next
+    # extra_decoding_arguments['prefix_tag_counts'] = prefix_tag_counts
+    # extra_decoding_arguments['suffix_tag_counts'] = suffix_tag_counts
     ### END YOUR CODE
 
     return extra_decoding_arguments
@@ -150,7 +152,56 @@ def memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
     """
     predicted_tags = ["O"] * (len(sent))
     ### YOUR CODE HERE
-    raise NotImplementedError
+    e_word_tag_counts = extra_decoding_arguments["e_word_tag_counts"]
+    pi_prev = {("*", "*"): 1}
+    bp = {}
+    tags = list(index_to_tag_dict.values())
+    tags.remove("*")
+    for i in range(len(sent)):
+        features = extract_features(sent, i)
+        pi_curr = {}
+        for v in tags:
+            e_x_v = e_word_tag_counts[sent[i]][v]
+            if e_x_v < 1:
+                continue
+            for u in tags:
+                curr_max = 0
+                curr_argmax = ""
+                for t in tags:
+                    if (t, u) not in pi_prev:
+                        continue
+                    features_tu = features.copy()
+                    features_tu["prevprev_tag"], features_tu["prev_tag"] = t, u
+                    q_key = (t, u, features["prevprev_word"],
+                             features["prev_word"], features["next_word"])
+                    if q_key not in extra_decoding_arguments["q_dict"]:
+                        feat_vectorized = vectorize_features(vec, features_tu)
+                        probs = logreg.predict_proba(feat_vectorized)
+                        extra_decoding_arguments["q_dict"][q_key] = probs
+                    pi_prev_tu = pi_prev[(t, u)]
+                    prod_prob = extra_decoding_arguments["q_dict"][q_key] * \
+                                pi_prev_tu
+                    if prod_prob > curr_max:
+                        curr_max = prod_prob
+                        curr_argmax = t
+                if curr_max != 0:
+                    pi_curr[(u, v)] = curr_max
+                    bp[(i, u, v)] = curr_argmax
+        pi_prev = pi_curr
+
+    max_end_pred = 0
+    for u in tags:
+        for v in tags:
+            if (u, v) not in pi_curr:
+                continue
+            uv_pred = pi_curr[(u, v)]
+            if uv_pred > max_end_pred:
+                max_end_pred = uv_pred
+                predicted_tags[-2], predicted_tags[-1] = u, v
+
+    #  predicted_tags[-2], predicted_tags[-1] = max(pi_curr, key=pi_curr.get)
+    for k in range(len(predicted_tags) - 3, -1, -1):
+        predicted_tags[k] = bp[(k + 2, predicted_tags[k + 1], predicted_tags[k + 2])]
     ### END YOUR CODE
     return predicted_tags
 
