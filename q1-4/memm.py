@@ -6,6 +6,7 @@ import os
 import numpy as np
 from collections import defaultdict
 
+
 def build_extra_decoding_arguments(train_sents):
     """
     Receives: all sentences from training set
@@ -34,14 +35,14 @@ def build_extra_decoding_arguments(train_sents):
             # prev/next word tag pairs
             if i != 2:
                 e_word_tag_counts_prev[sent[i - 1][0]][tag] += 1
-            if i != len(sent)-1:
+            if i != len(sent) - 1:
                 e_word_tag_counts_next[sent[i + 1][0]][tag] += 1
 
             # suffix/prefix tag pairs
             max_sub_len = min(len(word), 4)
             for sub_len in range(0, max_sub_len):
-                prefix_tag_counts[word[:sub_len+1]][tag] += 1
-                suffix_tag_counts[word[-sub_len-1:]][tag] += 1
+                prefix_tag_counts[word[:sub_len + 1]][tag] += 1
+                suffix_tag_counts[word[-sub_len - 1:]][tag] += 1
             total_tokens += 1
         q_tri_counts[(sent[-2][1], sent[-1][1], "STOP")] += 1
         q_bi_counts[(sent[-1][1], "STOP")] += 1
@@ -88,12 +89,15 @@ def extract_features_base(curr_word, next_word, prev_word, prevprev_word, prev_t
     ### END YOUR CODE
     return features
 
+
 def extract_features(sentence, i):
     curr_word = sentence[i][0]
     prev_token = sentence[i - 1] if i > 0 else ('<st>', '*')
     prevprev_token = sentence[i - 2] if i > 1 else ('<st>', '*')
     next_token = sentence[i + 1] if i < (len(sentence) - 1) else ('</s>', 'STOP')
-    return extract_features_base(curr_word, next_token[0], prev_token[0], prevprev_token[0], prev_token[1], prevprev_token[1])
+    return extract_features_base(curr_word, next_token[0], prev_token[0], prevprev_token[0], prev_token[1],
+                                 prevprev_token[1])
+
 
 def vectorize_features(vec, features):
     """
@@ -106,6 +110,7 @@ def vectorize_features(vec, features):
     """
     example = [features]
     return vec.transform(example)
+
 
 def create_examples(sents, tag_to_idx_dict):
     examples = []
@@ -137,6 +142,7 @@ def memm_greedy(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments):
     ### END YOUR CODE
     return predicted_tags
 
+
 def memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments):
     """
         Receives: a sentence to tag and the parameters learned by memm
@@ -147,6 +153,7 @@ def memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
     raise NotImplementedError
     ### END YOUR CODE
     return predicted_tags
+
 
 def memm_eval(test_data, logreg, vec, index_to_tag_dict, extra_decoding_arguments):
     """
@@ -168,7 +175,20 @@ def memm_eval(test_data, logreg, vec, index_to_tag_dict, extra_decoding_argument
         gold_tag_seqs.append(true_tags)
 
         ### YOUR CODE HERE
-        
+        greedy_pred = memm_greedy(sent, logreg, vec,
+                                  index_to_tag_dict,
+                                  extra_decoding_arguments)
+        greedy_pred_tag_seqs.append(greedy_pred)
+        viterbi_pred = memm_viterbi(sent, logreg, vec,
+                                    index_to_tag_dict,
+                                    extra_decoding_arguments)
+        viterbi_pred_tag_seqs.append(viterbi_pred)
+        total_words_count += len(sent)
+        for i in range(len(sent)):
+            if true_tags[i] == viterbi_pred[i]:
+                correct_viterbi_preds += 1
+            if true_tags[i] == greedy_pred[i]:
+                correct_greedy_preds += 1
         ### END YOUR CODE
 
     greedy_evaluation = evaluate_ner(gold_tag_seqs, greedy_pred_tag_seqs)
@@ -205,7 +225,6 @@ if __name__ == "__main__":
     vec = DictVectorizer()
     print("Create train examples")
     train_examples, train_labels = create_examples(train_sents, tag_to_idx_dict)
-
 
     num_train_examples = len(train_examples)
     print("#example: " + str(num_train_examples))
