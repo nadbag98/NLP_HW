@@ -138,8 +138,14 @@ def memm_greedy(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments):
     for i in range(len(sent)):
         sent_tups = list(zip(sent, predicted_tags))
         features = extract_features(sent_tups, i)
-        feat_vectorized = vectorize_features(vec, features)
-        probs = logreg.predict_proba(feat_vectorized)
+        q_key = (features["prevprev_tag"], features["prev_tag"], features["prevprev_word"],
+                 features["prev_word"], features["next_word"])
+        probs = extra_decoding_arguments["q_dict"].get(q_key)
+        if probs is None:
+            feat_vectorized = vectorize_features(vec, features)
+            probs = logreg.predict_proba(feat_vectorized)[0]
+            extra_decoding_arguments["q_dict"][q_key] = probs
+
         predicted_tags[i] = index_to_tag_dict[np.argmax(probs)]
     ### END YOUR CODE
     return predicted_tags
@@ -155,15 +161,17 @@ def memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
     e_word_tag_counts = extra_decoding_arguments["e_word_tag_counts"]
     pi_prev = {("*", "*"): 1}
     bp = {}
-    tags = list(index_to_tag_dict.values())
-    tags.remove("*")
+    tags = [index_to_tag_dict[i] for i in range(len(index_to_tag_dict))]
+    # tags.remove("*")
     for i in range(len(sent)):
         features = extract_features(sent, i)
         pi_curr = {}
         for v in tags:
-            e_x_v = e_word_tag_counts[sent[i]][v]
-            if e_x_v < 1:
+            if v == "*":
                 continue
+            # e_x_v = e_word_tag_counts[sent[i]][v]
+            # if e_x_v < 1:
+            #     continue
             for u in tags:
                 curr_max = 0
                 curr_argmax = ""
@@ -174,13 +182,15 @@ def memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
                     features_tu["prevprev_tag"], features_tu["prev_tag"] = t, u
                     q_key = (t, u, features["prevprev_word"],
                              features["prev_word"], features["next_word"])
-                    if q_key not in extra_decoding_arguments["q_dict"]:
+                    probs = extra_decoding_arguments["q_dict"].get(q_key)
+
+                    if probs is None:
                         feat_vectorized = vectorize_features(vec, features_tu)
-                        probs = logreg.predict_proba(feat_vectorized)
+                        probs = logreg.predict_proba(feat_vectorized)[0]
                         extra_decoding_arguments["q_dict"][q_key] = probs
                     pi_prev_tu = pi_prev[(t, u)]
-                    prod_prob = extra_decoding_arguments["q_dict"][q_key] * \
-                                pi_prev_tu
+                    prod_prob = probs[tags.index(v)] * pi_prev_tu
+
                     if prod_prob > curr_max:
                         curr_max = prod_prob
                         curr_argmax = t
@@ -197,8 +207,9 @@ def memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
             uv_pred = pi_curr[(u, v)]
             if uv_pred > max_end_pred:
                 max_end_pred = uv_pred
-                predicted_tags[-2], predicted_tags[-1] = u, v
-
+                if len(sent) > 1:
+                    predicted_tags[-2] = u
+                predicted_tags[-1] = v
     #  predicted_tags[-2], predicted_tags[-1] = max(pi_curr, key=pi_curr.get)
     for k in range(len(predicted_tags) - 3, -1, -1):
         predicted_tags[k] = bp[(k + 2, predicted_tags[k + 1], predicted_tags[k + 2])]
@@ -221,7 +232,11 @@ def memm_eval(test_data, logreg, vec, index_to_tag_dict, extra_decoding_argument
     gold_tag_seqs = []
     greedy_pred_tag_seqs = []
     viterbi_pred_tag_seqs = []
+    counter = 0
     for sent in test_data:
+        counter += 1
+        if counter % 100 == 0:
+            print("wohoo" + str(counter))
         words, true_tags = zip(*sent)
         gold_tag_seqs.append(true_tags)
 
