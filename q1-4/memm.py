@@ -169,9 +169,9 @@ def memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
         for v in tags:
             if v == "*":
                 continue
-            # e_x_v = e_word_tag_counts[sent[i]][v]
-            # if e_x_v < 1:
-            #     continue
+            e_x_v = e_word_tag_counts[sent[i]][v]
+            if e_x_v < 1:
+                continue
             for u in tags:
                 curr_max = 0
                 curr_argmax = ""
@@ -232,15 +232,23 @@ def memm_eval(test_data, logreg, vec, index_to_tag_dict, extra_decoding_argument
     gold_tag_seqs = []
     greedy_pred_tag_seqs = []
     viterbi_pred_tag_seqs = []
+
+    ## DELETE MEEEEE
     counter = 0
+    time_start = time.time()
+
     for sent in test_data:
-        counter += 1
-        if counter % 100 == 0:
-            print("wohoo" + str(counter))
         words, true_tags = zip(*sent)
         gold_tag_seqs.append(true_tags)
 
         ### YOUR CODE HERE
+        counter += 1
+        if counter % 100 == 0:
+            time_end = time.time()
+            print("wohoo " + str(counter))
+            print("our elapsed: " + str(time_end - time_start))
+            time_start = time.time()
+
         greedy_pred = memm_greedy(sent, logreg, vec,
                                   index_to_tag_dict,
                                   extra_decoding_arguments)
