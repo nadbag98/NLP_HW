@@ -169,9 +169,9 @@ def memm_viterbi(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments)
         for v in tags:
             if v == "*":
                 continue
-            e_x_v = e_word_tag_counts[sent[i]][v]
-            if e_x_v < 1:
-                continue
+            # e_x_v = e_word_tag_counts[sent[i]][v]
+            # if e_x_v < 1:
+            #     continue
             for u in tags:
                 curr_max = 0
                 curr_argmax = ""
