@@ -64,7 +64,6 @@ def hmm_viterbi(sent, total_tokens, q_tri_counts, q_bi_counts, q_uni_counts,
     tags = defaultdict(lambda: keys)
     tags[0] = ["*"]
     tags[1] = ["*"]
-    # TODO - preprocessing
     predicted_tags = ["*", "*"] + predicted_tags
     sent = ["", ""] + list(sent)
     # We work with log probability to avoid values too close to zero
@@ -130,8 +129,8 @@ def hmm_eval(test_data, total_tokens, q_tri_counts, q_bi_counts, q_uni_counts, e
         gold_tag_seqs.append(true_tags)
 
         ### YOUR CODE HERE
-        lambda1 = 0.7
-        lambda2 = 0.2
+        lambda1 = 0.5
+        lambda2 = 0.3
 
         pred_tag_seqs.append(hmm_viterbi(words, total_tokens, q_tri_counts, q_bi_counts, q_uni_counts,
         e_word_tag_counts, e_tag_counts, lambda1, lambda2))

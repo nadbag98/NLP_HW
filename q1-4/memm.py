@@ -119,7 +119,31 @@ def memm_greedy(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments):
     """
     predicted_tags = ["O"] * (len(sent))
     ### YOUR CODE HERE
-    raise NotImplementedError
+
+    for i in range(len(sent)):
+        features = extract_features(sent, i)
+        curr_tag_max = ""
+        curr_max = 0
+
+
+        for j in range(len(index_to_tag_dict)-1):
+            tag = index_to_tag_dict[j]
+            curr_tag_sum = 0
+
+            curr_tag_sum += extra_decoding_arguments['q_uni_counts'][tag] / extra_decoding_arguments['total_tokens']
+            curr_tag_sum
+
+
+    # extra_decoding_arguments['total_tokens'] = total_tokens
+    # extra_decoding_arguments['q_tri_counts'] = q_tri_counts
+    # extra_decoding_arguments['q_bi_counts'] = q_bi_counts
+    # extra_decoding_arguments['q_uni_counts'] = q_uni_counts
+    # extra_decoding_arguments['e_word_tag_counts'] = e_word_tag_counts
+    # extra_decoding_arguments['e_word_tag_counts_prev'] = e_word_tag_counts_prev
+    # extra_decoding_arguments['e_word_tag_counts_next'] = e_word_tag_counts_next
+    # extra_decoding_arguments['prefix_tag_counts'] = prefix_tag_counts
+    # extra_decoding_arguments['suffix_tag_counts'] = suffix_tag_counts
+
     ### END YOUR CODE
     return predicted_tags
 
