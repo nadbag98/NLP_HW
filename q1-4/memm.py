@@ -76,6 +76,15 @@ def extract_features_base(curr_word, next_word, prev_word, prevprev_word, prev_t
     features['prevprev_word'] = prevprev_word
     features['prev_tag'] = prev_tag
     features['prevprev_tag'] = prevprev_tag
+    features['prefix_1'] = curr_word[0]
+    features['prefix_2'] = curr_word[:2]
+    features['prefix_3'] = curr_word[:3]
+    features['prefix_4'] = curr_word[:4]
+    features['suffix_1'] = curr_word[-1]
+    features['suffix_2'] = curr_word[-2:]
+    features['suffix_3'] = curr_word[-3:]
+    features['suffix_4'] = curr_word[-4:]
+
     ### END YOUR CODE
     return features
 
@@ -119,31 +128,12 @@ def memm_greedy(sent, logreg, vec, index_to_tag_dict, extra_decoding_arguments):
     """
     predicted_tags = ["O"] * (len(sent))
     ### YOUR CODE HERE
-
     for i in range(len(sent)):
-        features = extract_features(sent, i)
-        curr_tag_max = ""
-        curr_max = 0
-
-
-        for j in range(len(index_to_tag_dict)-1):
-            tag = index_to_tag_dict[j]
-            curr_tag_sum = 0
-
-            curr_tag_sum += extra_decoding_arguments['q_uni_counts'][tag] / extra_decoding_arguments['total_tokens']
-            curr_tag_sum
-
-
-    # extra_decoding_arguments['total_tokens'] = total_tokens
-    # extra_decoding_arguments['q_tri_counts'] = q_tri_counts
-    # extra_decoding_arguments['q_bi_counts'] = q_bi_counts
-    # extra_decoding_arguments['q_uni_counts'] = q_uni_counts
-    # extra_decoding_arguments['e_word_tag_counts'] = e_word_tag_counts
-    # extra_decoding_arguments['e_word_tag_counts_prev'] = e_word_tag_counts_prev
-    # extra_decoding_arguments['e_word_tag_counts_next'] = e_word_tag_counts_next
-    # extra_decoding_arguments['prefix_tag_counts'] = prefix_tag_counts
-    # extra_decoding_arguments['suffix_tag_counts'] = suffix_tag_counts
-
+        sent_tups = list(zip(sent, predicted_tags))
+        features = extract_features(sent_tups, i)
+        feat_vectorized = vectorize_features(vec, features)
+        probs = logreg.predict_proba(feat_vectorized)
+        predicted_tags[i] = index_to_tag_dict[np.argmax(probs)]
     ### END YOUR CODE
     return predicted_tags
 
@@ -178,7 +168,7 @@ def memm_eval(test_data, logreg, vec, index_to_tag_dict, extra_decoding_argument
         gold_tag_seqs.append(true_tags)
 
         ### YOUR CODE HERE
-        raise NotImplementedError
+        
         ### END YOUR CODE
 
     greedy_evaluation = evaluate_ner(gold_tag_seqs, greedy_pred_tag_seqs)
