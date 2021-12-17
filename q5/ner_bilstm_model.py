@@ -25,7 +25,7 @@ class Config:
     information parameters. Model objects are passed a Config() object at
     instantiation.
     """
-    device='cpu'
+    device='gpu'
     n_word_features = 2 # Number of features derived from every word in the input.
     window_size = 1
     n_features = (2 * window_size + 1) * n_word_features # Number of features used for every word in the input (including the window).
@@ -60,9 +60,9 @@ class NerBiLstmModel(torch.nn.Module):
     """
     def __init__(self, helper, config, pretrained_embeddings):
         """
-        TODO:
         - Initialize the layer of the models:
-            - *Unfrozen* embeddings of shape (V, D) which are loaded with pre-trained weights (`pretrained_embeddings`)
+            - *Unfrozen* embeddings of shape (V, D) which are loaded with
+            pre-trained weights (`pretrained_embeddings`)
             - BiLSTM layer with hidden size of H/2 per direction
             - Linear layer with output of shape C
 
@@ -73,7 +73,8 @@ class NerBiLstmModel(torch.nn.Module):
             C - number of classes being predicted
 
         Hints:
-        - For the input dimension of the BiLSTM, think about the size of an embedded word representation
+        - For the input dimension of the BiLSTM, think about the size of
+            an embedded word representation
         """
         super(NerBiLstmModel, self).__init__()
         self.config = config
@@ -81,13 +82,23 @@ class NerBiLstmModel(torch.nn.Module):
 
         self._dropout = torch.nn.Dropout(config.dropout)
         ### YOUR CODE HERE (3 lines)
-        raise NotImplementedError
+        self.embeddings = torch.nn.Embedding.from_pretrained(
+                                    pretrained_embeddings,
+                                    freeze=False)
+        self.bilstm = torch.nn.LSTM(input_size=(self.config.n_features*
+                                                self.config.embed_size),
+                                    hidden_size=(self.config.hidden_size // 2),
+                                    num_layers=1,
+                                    batch_first=True,
+                                    bidirectional=True)
+        self.lin = torch.nn.Linear(self.config.hidden_size,
+                                   self.config.n_classes)
         ### END YOUR CODE
 
     def forward(self, sentences):
         """
-        TODO:
-        - Perform the forward pass of the model, according to the model description in the handout:
+        - Perform the forward pass of the model, according to the model
+        description in the handout:
             1. Get the embeddings of the input
             2. Apply dropout on the output of 1
             3. Pass the output of 2 through the BiLSTM layer
@@ -96,36 +107,46 @@ class NerBiLstmModel(torch.nn.Module):
             6. Perform softmax on the output of 5 to get tag_probs
 
         Hints:
-        - Reshape the output of the embeddings layer so the full representation of an embedded word fits in one dimension.
+        - Reshape the output of the embeddings layer so the full representation
+            of an embedded word fits in one dimension.
           You might find the .view method of a tensor helpful.
 
         Args:
-        - sentences: The input tensor of shape (batch_size, max_length, n_features)
+        - sentences: The input tensor of shape
+            (batch_size, max_length, n_features)
 
         Returns:
-        - tag_probs: A tensor of shape (batch_size, max_length, n_classes) which represents the probability
+        - tag_probs: A tensor of shape (batch_size, max_length, n_classes)
+                    which represents the probability
                      for each tag for each word in a sentence.
         """
         batch_size, seq_length = sentences.shape[0], sentences.shape[1]
         ### YOUR CODE HERE (5-9 lines)
-        raise NotImplementedError
+        embs = self.embeddings(sentences)
+        embs = self._dropout(embs)
+        embs = embs.view(batch_size, seq_length, -1)
+        lstm_out = self.bilstm(embs)[0]
+        lstm_out = self._dropout(lstm_out)
+        lin_out = self.lin(lstm_out)
+        ls = torch.nn.LogSoftmax(dim=1)
+        tag_probs = ls(lin_out)
         ### END YOUR CODE
         return tag_probs
 
 class Trainer(TrainerBase):
     def __init__(self, model, config, helper, logger):
         """
-        TODO:
         - Define the cross entropy loss function in self._loss_function.
           It will be used in _batch_loss.
 
         Hints:
-        - Don't use automatically PyTorch's CrossEntropyLoss - read its documentation first 
+        - Don't use automatically PyTorch's CrossEntropyLoss -
+        read its documentation first
         """
         super(Trainer, self).__init__(model, config, helper, logger)
 
         ### YOUR CODE HERE (1 line)
-        raise NotImplementedError
+        self._loss_function = torch.nn.NLLLoss()
         ### END YOUR CODE
         self._optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
 
@@ -145,14 +166,15 @@ class Trainer(TrainerBase):
 
     def _batch_loss(self, tag_probs, labels, masks):
         """
-        TODO:
         - Calculate the cross entropy loss of the input batch
 
         Hints:
-        - You might find torch.unsqueeze, torch.masked_fill (use ~masks to get the inversion) and torch.transpose useful.
+        - You might find torch.unsqueeze, torch.masked_fill
+        (use ~masks to get the inversion) and torch.transpose useful.
 
         Args:
-        - tag_probs: A tensor of shape (batch_size, max_length, n_classes) containing the output of the neural
+        - tag_probs: A tensor of shape (batch_size, max_length, n_classes)
+                    containing the output of the neural
                      network (*after* softmax).
         - labels: The gold labels tensor of shape (batch_size, max_length)
         - masks: The masks tensor of shape (batch_size, max_length)
@@ -161,7 +183,10 @@ class Trainer(TrainerBase):
             loss: A 0-d tensor (scalar)
         """
         ### YOUR CODE HERE (3-6 lines)
-        raise NotImplementedError
+        masks_inv = ~masks
+        masked_tag_probs = tag_probs.masked_fill(masks_inv.unsqueeze(dim=-1), 0)\
+            .transpose(-1, -2)
+        masked_labels = labels.masked_fill(masks_inv, 0).type(torch.LongTensor)
         ### END YOUR CODE
         loss = self._loss_function(masked_tag_probs, masked_labels)
         return loss
@@ -440,4 +465,4 @@ def main(arguments_str):
         ARGS.func(ARGS)
 
 if __name__ == "__main__":
-    main(None)
+    main("test_training")
