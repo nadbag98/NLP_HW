@@ -85,7 +85,7 @@ class NerBiLstmModel(torch.nn.Module):
         self.embeddings = torch.nn.Embedding.from_pretrained(
                                     pretrained_embeddings,
                                     freeze=False)
-        self.bilstm = torch.nn.LSTM(input_size=(self.config.n_features*
+        self.bilstm = torch.nn.LSTM(input_size=(self.config.n_features *
                                                 self.config.embed_size),
                                     hidden_size=(self.config.hidden_size // 2),
                                     num_layers=1,
@@ -465,4 +465,4 @@ def main(arguments_str):
         ARGS.func(ARGS)
 
 if __name__ == "__main__":
-    main("test_training")
+    main("train")
