@@ -172,7 +172,7 @@ class DataPreprocessor(BaseDataPreprocessor):
         @max_length by padding it with zeros and truncating the rest of the
         sequence.
 
-        TODO: In the code below, for every sentence, labels pair in @data,
+        In the code below, for every sentence, labels pair in @data,
         (a) create a new sentence which appends zero feature vectors until
         the sentence is of length @max_length. If the sentence is longer
         than @max_length, simply truncate the sentence to be @max_length
@@ -211,7 +211,12 @@ class DataPreprocessor(BaseDataPreprocessor):
 
         for sentence, labels in examples:
             ### YOUR CODE HERE (~5 lines)
-            raise NotImplementedError
+            len_s = len(sentence)
+            pad = max(0, max_length - len_s)
+            mask = ([True] * len_s + [False] * pad)[:max_length]
+            new_sent = (sentence + ([zero_vector] * pad))[:max_length]
+            new_labs = (labels + [zero_label] * pad)[:max_length]
+            ret.append((new_sent, new_labs, mask))
             ### END YOUR CODE
         return ret
 
