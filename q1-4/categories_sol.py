@@ -26,19 +26,19 @@ rare_words_transformation_rules = [
     ('allCaps',            regex_rule('^[A-Z]+$')),                # Example: ALLCAP
     ('capPeriod',          regex_rule('^[A-Z]\.$')),               # Example: M.
 
-    ('thing-and-thing',    regex_rule('^[a-z]+\-and\-[a-z]+$')),   # Example: black-and-white
-    ('thing-and-thing',    regex_rule('^[a-z]+\-and\-[a-z]+$')),   # Example: black-and-white
-    ('thing-than-thing',   regex_rule('^[a-z]+\-than\-[a-z]+$')),  # Example: smaller-than-expected
-    ('thing-the-thing',    regex_rule('^[a-z]+\-the\-[a-z]+$')),   # Example: behind-the-scenes
-    ('co-thing',               regex_rule('^co\-[a-z]+$')),        # Example: co-sponsored
-    ('pre-thing',              regex_rule('^pre\-[a-z]+$')),       # Example: pre-empt
-    ('pro-thing',              regex_rule('^pro\-[a-z]+$')),       # Example: pro-active
-    ('much-thing',             regex_rule('^much\-[a-z]+$')),      # Example: much-publicized
-    ('most-thing',             regex_rule('^most\-[a-z]+$')),      # Example: most-active
-    ('low-thing',              regex_rule('^low\-[a-z]+$')),       # Example: low-level
-    ('high-thing',             regex_rule('^high\-[a-z]+$')),      # Example: high-visibility
-    ('inter-thing',            regex_rule('^inter\-[a-z]+$')),     # Example: inter-city
-    ('-a-',                    regex_rule('^.+\-a\-.+$')),         # Example: 18-a-share
+    ('has_dash',    regex_rule('^[a-z]+\-and\-[a-z]+$')),   # Example: black-and-white
+    ('has_dash',    regex_rule('^[a-z]+\-and\-[a-z]+$')),   # Example: black-and-white
+    ('has_dash',   regex_rule('^[a-z]+\-than\-[a-z]+$')),  # Example: smaller-than-expected
+    ('has_dash',    regex_rule('^[a-z]+\-the\-[a-z]+$')),   # Example: behind-the-scenes
+    ('has_dash',               regex_rule('^co\-[a-z]+$')),        # Example: co-sponsored
+    ('has_dash',              regex_rule('^pre\-[a-z]+$')),       # Example: pre-empt
+    ('has_dash',              regex_rule('^pro\-[a-z]+$')),       # Example: pro-active
+    ('has_dash',             regex_rule('^much\-[a-z]+$')),      # Example: much-publicized
+    ('has_dash',             regex_rule('^most\-[a-z]+$')),      # Example: most-active
+    ('has_dash',              regex_rule('^low\-[a-z]+$')),       # Example: low-level
+    ('has_dash',             regex_rule('^high\-[a-z]+$')),      # Example: high-visibility
+    ('has_dash',            regex_rule('^inter\-[a-z]+$')),     # Example: inter-city
+    ('has_dash',                    regex_rule('^.+\-a\-.+$')),         # Example: 18-a-share
 
     ('iedLowercase',           regex_rule('^[a-z]+ied$')),         # Example: supplied
     ('edLowercase',            regex_rule('^[a-z]+ed$')),          # Example: played
