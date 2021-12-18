@@ -89,6 +89,7 @@ class NerBiLstmModel(torch.nn.Module):
                                                 self.config.embed_size),
                                     hidden_size=(self.config.hidden_size // 2),
                                     num_layers=1,
+                                    bias=False,
                                     batch_first=True,
                                     bidirectional=True)
         self.lin = torch.nn.Linear(self.config.hidden_size,
@@ -128,7 +129,7 @@ class NerBiLstmModel(torch.nn.Module):
         lstm_out = self.bilstm(embs)[0]
         lstm_out = self._dropout(lstm_out)
         lin_out = self.lin(lstm_out)
-        ls = torch.nn.LogSoftmax(dim=1)
+        ls = torch.nn.LogSoftmax(dim=-1)
         tag_probs = ls(lin_out)
         ### END YOUR CODE
         return tag_probs
