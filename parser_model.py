@@ -80,15 +80,19 @@ class ParserModel(nn.Module):
         ### END YOUR CODE
 
     def embedding_lookup(self, t):
-        """ Utilize `self.pretrained_embeddings` to map input `t` from input tokens (integers)
-            to embedding vectors.
+        """ Utilize `self.pretrained_embeddings` to map input `t` from
+        input tokens (integers) to embedding vectors.
 
             PyTorch Notes:
-                - `self.pretrained_embeddings` is a torch.nn.Embedding object that we defined in __init__
-                - Here `t` is a tensor where each row represents a list of features. Each feature is represented by an integer (input token).
-                - In PyTorch the Embedding object, e.g. `self.pretrained_embeddings`, allows you to
-                    go from an index to embedding. Please see the documentation (https://pytorch.org/docs/stable/nn.html#torch.nn.Embedding)
-                    to learn how to use `self.pretrained_embeddings` to extract the embeddings for your tensor `t`.
+                - `self.pretrained_embeddings` is a torch.nn.Embedding object
+                that we defined in __init__
+                - Here `t` is a tensor where each row represents a list of
+                features. Each feature is represented by an integer (input token).
+                - In PyTorch the Embedding object, e.g. `self.pretrained_embeddings`,
+                allows you to go from an index to embedding.
+                Please see the documentation (https://pytorch.org/docs/stable/nn.html#torch.nn.Embedding)
+                to learn how to use `self.pretrained_embeddings` to extract
+                the embeddings for your tensor `t`.
 
             @param t (Tensor): input tensor of tokens (batch_size, n_features)
 
@@ -107,7 +111,9 @@ class ParserModel(nn.Module):
         ###     Embedding Layer: https://pytorch.org/docs/stable/nn.html#torch.nn.Embedding
         ###     View: https://pytorch.org/docs/stable/tensors.html#torch.Tensor.view
         ### YOUR CODE HERE (~1-3 Lines)
-        raise NotImplementedError
+        batch_size = t.shape[0]
+        x = self.pretrained_embeddings(t)
+        x = x.view(batch_size, -1)
         ### END YOUR CODE
         return x
 
@@ -115,21 +121,25 @@ class ParserModel(nn.Module):
     def forward(self, t):
         """ Run the model forward.
 
-            Note that we will not apply the softmax function here because it is included in the loss function nn.CrossEntropyLoss
+            Note that we will not apply the softmax function here because
+            it is included in the loss function nn.CrossEntropyLoss
 
             PyTorch Notes:
                 - Every nn.Module object (PyTorch model) has a `forward` function.
-                - When you apply your nn.Module to an input tensor `t` this function is applied to the tensor.
-                    For example, if you created an instance of your ParserModel and applied it to some `t` as follows,
-                    the `forward` function would called on `t` and the result would be stored in the `output` variable:
+                - When you apply your nn.Module to an input tensor `t` this
+                function is applied to the tensor.
+                    For example, if you created an instance of your ParserModel
+                    and applied it to some `t` as follows,
+                    the `forward` function would called on `t` and the result
+                    would be stored in the `output` variable:
                         model = ParserModel()
                         output = model(t) # this calls the forward function
                 - For more details checkout: https://pytorch.org/docs/stable/nn.html#torch.nn.Module.forward
 
         @param t (Tensor): input tensor of tokens (batch_size, n_features)
 
-        @return logits (Tensor): tensor of predictions (output after applying the layers of the network)
-                                 without applying softmax (batch_size, n_classes)
+        @return logits (Tensor): tensor of predictions (output after applying the
+        layers of the network) without applying softmax (batch_size, n_classes)
         """
         ### TODO:
         ###     1) Apply `self.embedding_lookup` to `t` to get the embeddings
@@ -144,6 +154,10 @@ class ParserModel(nn.Module):
         ### Please see the following docs for support:
         ###     ReLU: https://pytorch.org/docs/stable/nn.html?highlight=relu#torch.nn.functional.relu
         ### YOUR CODE HERE (~3-5 lines)
-        raise NotImplementedError
+        embs = self.embedding_lookup(t)
+        pre_hidden = self.embed_to_hidden(embs)
+        relu = nn.ReLU()
+        hidden = self.dropout(relu(pre_hidden))
+        logits = self.hidden_to_logits(hidden)
         ### END YOUR CODE
         return logits

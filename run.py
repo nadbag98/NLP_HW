@@ -23,7 +23,8 @@ from utils.parser_utils import minibatches, load_and_preprocess_data, AverageMet
 # -----------------
 # Primary Functions
 # -----------------
-def train(parser, train_data, dev_data, output_path, batch_size=1024, n_epochs=10, lr=0.0005, device="cpu"):
+def train(parser, train_data, dev_data, output_path, batch_size=1024,
+          n_epochs=10, lr=0.0005, device="cpu"):
     """ Train the neural dependency parser.
 
     @param parser (Parser): Neural Dependency Parser
