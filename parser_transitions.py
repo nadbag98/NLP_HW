@@ -131,8 +131,11 @@ def minibatch_parse(sentences, model, batch_size):
     while unfinished_parses != []:
         minibatch = unfinished_parses[:batch_size]
         transitions = model.predict(minibatch)
-        for i in range(batch_size):
+        for i in range(batch_size-1, -1, -1):
             minibatch[i].parse_step(transitions[i])
+            if minibatch[i].stack == ["ROOT"] and minibatch[i].buffer == []:
+                unfinished_parses.pop(i)
+    dependencies = [partial_parses[i].dependencies for i in range(len(sentences))]
     ### END YOUR CODE
 
     return dependencies
@@ -188,7 +191,7 @@ class DummyModel(object):
     the sentence is "right", "left" if otherwise.
     """
     def predict(self, partial_parses):
-        return [("RA" if pp.stack[1] is "right" else "LA") if len(pp.buffer) == 0 else "S"
+        return [("RA" if pp.stack[1] == "right" else "LA") if len(pp.buffer) == 0 else "S"
                 for pp in partial_parses]
 
 
