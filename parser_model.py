@@ -19,10 +19,10 @@ class ParserModel(nn.Module):
     given partial parse configuration.
 
     PyTorch Notes:
-        - Note that "ParserModel" is a subclass of the "nn.Module" class. In PyTorch all neural networks
-            are a subclass of this "nn.Module".
-        - The "__init__" method is where you define all the layers and their respective parameters
-            (embedding layers, linear layers, dropout layers, etc.).
+        - Note that "ParserModel" is a subclass of the "nn.Module" class.
+        In PyTorch all neural networks are a subclass of this "nn.Module".
+        - The "__init__" method is where you define all the layers and their
+        respective parameters (embedding layers, linear layers, dropout layers, etc.).
         - "__init__" gets automatically called when you create a new instance of your class, e.g.
             when you write "m = ParserModel()".
         - Other methods of ParserModel can access variables that have "self." prefix. Thus,
@@ -71,7 +71,12 @@ class ParserModel(nn.Module):
         ###     Xavier Init: https://pytorch.org/docs/stable/nn.html#torch.nn.init.xavier_uniform_
         ###     Dropout: https://pytorch.org/docs/stable/nn.html#torch.nn.Dropout
         ### YOUR CODE HERE (~5 Lines)
-        raise NotImplementedError
+        self.embed_to_hidden = nn.Linear(self.embed_size * self.n_features,
+                                         self.hidden_size)
+        nn.init.xavier_uniform_(self.embed_to_hidden.weight, gain=1)
+        self.dropout = nn.Dropout(p=dropout_prob)
+        self.hidden_to_logits = nn.Linear(self.hidden_size, self.n_classes)
+        nn.init.xavier_uniform_(self.hidden_to_logits.weight, gain=1)
         ### END YOUR CODE
 
     def embedding_lookup(self, t):
